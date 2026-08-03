@@ -1,6 +1,7 @@
 ﻿using InsightHub.Application.Features.Datasets.Commands.CreateDataset;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
 
 namespace InsightHub.API.Controllers;
 
@@ -24,6 +25,18 @@ public class DatasetsController : ControllerBase
         {
             Id = datasetId,
             Message = "Dataset başarıyla oluşturuldu."
+        });
+    }
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload([FromForm] UploadDatasetCommand command)
+    {
+        var datasetId = await _mediator.Send(command);
+
+        return Ok(new
+        {
+            Id = datasetId,
+            Message = "CSV dosyası başarıyla yüklendi."
         });
     }
 }
