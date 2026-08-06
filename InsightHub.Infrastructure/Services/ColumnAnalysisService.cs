@@ -11,10 +11,19 @@ using System.Globalization;
 using InsightHub.Domain.Enums;
 using CsvHelper.Configuration;
 
+using System.Globalization;
+
 namespace InsightHub.Infrastructure.Services;
 
 public class ColumnAnalysisService : IColumnAnalysisService
 {
+
+    private readonly IStatisticsService _statisticsService;
+
+    public ColumnAnalysisService(IStatisticsService statisticsService)
+    {
+        _statisticsService = statisticsService;
+    }
     public async Task<List<DatasetColumn>> AnalyzeAsync(string filePath, Guid datasetId)
     {
         using var reader = new StreamReader(filePath);
@@ -47,23 +56,50 @@ public class ColumnAnalysisService : IColumnAnalysisService
         {
             var values = columnValues[header];
 
-            columns.Add(new DatasetColumn
+            var dataType = DetectDataType(values);
+
+            var column = new DatasetColumn
             {
                 DatasetId = datasetId,
                 ColumnName = header,
-                DataType = DetectDataType(values),
+                DataType = dataType,
                 NullCount = values.Count(v => string.IsNullOrWhiteSpace(v)),
                 UniqueCount = values
                     .Where(v => !string.IsNullOrWhiteSpace(v))
                     .Distinct()
                     .Count()
-            });
+            };
+
+            if (dataType == DataType.Numeric)
+            {
+                var numericValues = GetNumericValues(values);
+
+                if (numericValues.Any())
+                {
+                    column.MinValue = _statisticsService.GetMin(numericValues);
+                    column.MaxValue = _statisticsService.GetMax(numericValues);
+                    column.AverageValue = _statisticsService.GetAverage(numericValues);
+                    column.MedianValue = _statisticsService.GetMedian(numericValues);
+                    column.StandardDeviation = _statisticsService.GetStandardDeviation(numericValues);
+                }
+            }
+
+            columns.Add(column);
         }
 
         return columns;
     }
 
-    private DataType DetectDataType(IEnumerable<string> values)
+
+
+private List<double> GetNumericValues(IEnumerable<string> values)
+{
+    return values
+        .Where(v => double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+        .Select(v => double.Parse(v, CultureInfo.InvariantCulture))
+        .ToList();
+}
+private DataType DetectDataType(IEnumerable<string> values)
     {
         var nonEmptyValues = values
             .Where(v => !string.IsNullOrWhiteSpace(v))
