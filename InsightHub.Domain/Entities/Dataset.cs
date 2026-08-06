@@ -20,4 +20,6 @@ public class Dataset : BaseEntity
     public int TotalColumns { get; set; }
 
     public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<DatasetColumn> Columns { get; set; } = new List<DatasetColumn>();
 }

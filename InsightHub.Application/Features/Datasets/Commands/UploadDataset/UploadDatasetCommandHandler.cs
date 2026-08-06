@@ -15,14 +15,21 @@ public class UploadDatasetCommandHandler : IRequestHandler<UploadDatasetCommand,
     private readonly IFileStorageService _fileStorageService;
     private readonly ICsvReaderService _csvReaderService;
 
+    private readonly IColumnAnalysisService _columnAnalysisService;
+    private readonly IDatasetColumnRepository _datasetColumnRepository;
+
     public UploadDatasetCommandHandler(
-        IDatasetRepository datasetRepository,
-        IFileStorageService fileStorageService,
-        ICsvReaderService csvReaderService)
+     IDatasetRepository datasetRepository,
+     IFileStorageService fileStorageService,
+     ICsvReaderService csvReaderService,
+     IColumnAnalysisService columnAnalysisService,
+     IDatasetColumnRepository datasetColumnRepository)
     {
         _datasetRepository = datasetRepository;
         _fileStorageService = fileStorageService;
         _csvReaderService = csvReaderService;
+        _columnAnalysisService = columnAnalysisService;
+        _datasetColumnRepository = datasetColumnRepository;
     }
 
     public async Task<Guid> Handle(
@@ -56,6 +63,14 @@ public class UploadDatasetCommandHandler : IRequestHandler<UploadDatasetCommand,
         };
 
         await _datasetRepository.AddAsync(dataset, cancellationToken);
+
+        var columns = await _columnAnalysisService.AnalyzeAsync(
+    filePath,
+    dataset.Id);
+
+        await _datasetColumnRepository.AddRangeAsync(
+            columns,
+            cancellationToken);
 
         return dataset.Id;
     }

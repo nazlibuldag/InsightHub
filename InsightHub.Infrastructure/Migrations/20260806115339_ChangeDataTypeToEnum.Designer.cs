@@ -4,6 +4,7 @@ using InsightHub.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsightHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806115339_ChangeDataTypeToEnum")]
+    partial class ChangeDataTypeToEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace InsightHub.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("AverageValue")
-                        .HasColumnType("float");
-
                     b.Property<string>("ColumnName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -82,20 +82,8 @@ namespace InsightHub.Infrastructure.Migrations
                     b.Property<Guid>("DatasetId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("MaxValue")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("MedianValue")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("MinValue")
-                        .HasColumnType("float");
-
                     b.Property<int>("NullCount")
                         .HasColumnType("int");
-
-                    b.Property<double?>("StandardDeviation")
-                        .HasColumnType("float");
 
                     b.Property<int>("UniqueCount")
                         .HasColumnType("int");

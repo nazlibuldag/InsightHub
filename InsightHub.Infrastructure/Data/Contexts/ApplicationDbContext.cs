@@ -18,4 +18,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Dataset> Datasets => Set<Dataset>();
+
+    public DbSet<DatasetColumn> DatasetColumns => Set<DatasetColumn>();
 }

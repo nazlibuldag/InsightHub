@@ -15,8 +15,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IDatasetRepository, DatasetRepository>();
+builder.Services.AddScoped<IDatasetColumnRepository, DatasetColumnRepository>();
 builder.Services.AddScoped<ICsvReaderService, CsvReaderService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IColumnAnalysisService, ColumnAnalysisService>();
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(InsightHub.Application.Features.Datasets.Commands.CreateDataset.CreateDatasetCommand).Assembly));
