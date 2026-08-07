@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
 using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
+using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
+using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
 
 namespace InsightHub.API.Controllers;
 
@@ -61,5 +64,37 @@ public class DatasetsController : ControllerBase
         }
 
         return Ok(dataset);
+    }
+
+    [HttpGet("{id}/summary")]
+    public async Task<IActionResult> GetSummary(Guid id)
+    {
+        var result = await _mediator.Send(new GetDatasetSummaryQuery(id));
+
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id,UpdateDatasetCommand command)
+    {
+        command.Id = id;
+
+        await _mediator.Send(command);
+
+        return Ok(new
+        {
+            Message = "Dataset başarıyla güncellendi."
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _mediator.Send(new DeleteDatasetCommand(id));
+
+        return Ok(new
+        {
+            Message = "Dataset başarıyla silindi."
+        });
     }
 }

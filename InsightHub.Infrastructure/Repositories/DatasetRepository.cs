@@ -37,4 +37,31 @@ public class DatasetRepository : IDatasetRepository
     {
         return await _context.Datasets.ToListAsync(cancellationToken);
     }
+
+    public async Task<Dataset?> GetByIdWithColumnsAsync(
+    Guid id,
+    CancellationToken cancellationToken)
+    {
+        return await _context.Datasets
+            .Include(x => x.Columns)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task UpdateAsync(
+    Dataset dataset,
+    CancellationToken cancellationToken)
+    {
+        _context.Datasets.Update(dataset);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(
+    Dataset dataset,
+    CancellationToken cancellationToken)
+    {
+        _context.Datasets.Remove(dataset);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

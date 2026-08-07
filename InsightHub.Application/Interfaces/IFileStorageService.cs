@@ -11,4 +11,6 @@ namespace InsightHub.Application.Interfaces;
 public interface IFileStorageService
 {
     Task<string> SaveFileAsync(IFormFile file, CancellationToken cancellationToken);
+
+    Task DeleteFileAsync(string fileName);
 }

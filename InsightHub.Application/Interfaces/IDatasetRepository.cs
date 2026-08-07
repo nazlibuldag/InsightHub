@@ -15,4 +15,10 @@ public interface IDatasetRepository
     Task<Dataset?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task<List<Dataset>> GetAllAsync(CancellationToken cancellationToken);
+
+    Task<Dataset?> GetByIdWithColumnsAsync( Guid id,CancellationToken cancellationToken);
+
+    Task UpdateAsync(Dataset dataset, CancellationToken cancellationToken);
+
+    Task DeleteAsync(Dataset dataset, CancellationToken cancellationToken);
 }

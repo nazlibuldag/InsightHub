@@ -33,5 +33,21 @@ public class FileStorageService : IFileStorageService
         await file.CopyToAsync(stream, cancellationToken);
 
         return fileName;
+
+    }
+
+    public Task DeleteFileAsync(string fileName)
+    {
+        var filePath = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "Uploads",
+            fileName);
+
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
+        return Task.CompletedTask;
     }
 }
