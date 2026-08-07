@@ -29,6 +29,7 @@ public class DatasetRepository : IDatasetRepository
     public async Task<Dataset?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Datasets
+            .Include(x => x.Columns)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

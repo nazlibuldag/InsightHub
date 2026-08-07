@@ -15,7 +15,6 @@
     <Folder Include="DTOs\" />
     <Folder Include="Features\Datasets\DTOs\" />
     <Folder Include="Features\Datasets\Validators\" />
-    <Folder Include="Features\Datasets\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

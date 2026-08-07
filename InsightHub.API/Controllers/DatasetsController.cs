@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
+using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
 
 namespace InsightHub.API.Controllers;
 
@@ -38,5 +40,26 @@ public class DatasetsController : ControllerBase
             Id = datasetId,
             Message = "CSV dosyası başarıyla yüklendi."
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var datasets = await _mediator.Send(new GetAllDatasetsQuery());
+
+        return Ok(datasets);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var dataset = await _mediator.Send(new GetDatasetByIdQuery(id));
+
+        if (dataset is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(dataset);
     }
 }
