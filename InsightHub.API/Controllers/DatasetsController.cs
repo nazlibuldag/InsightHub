@@ -7,6 +7,7 @@ using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
 using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
 
 namespace InsightHub.API.Controllers;
 
@@ -70,6 +71,18 @@ public class DatasetsController : ControllerBase
     public async Task<IActionResult> GetSummary(Guid id)
     {
         var result = await _mediator.Send(new GetDatasetSummaryQuery(id));
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/data")]
+    public async Task<IActionResult> GetDatasetData(Guid id)
+    {
+        var result = await _mediator.Send(
+            new GetDatasetDataQuery
+            {
+                DatasetId = id
+            });
 
         return Ok(result);
     }

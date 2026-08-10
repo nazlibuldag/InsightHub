@@ -32,4 +32,7 @@ public class DatasetColumn : BaseEntity
     public double? MedianValue { get; set; }
 
     public double? StandardDeviation { get; set; }
+
+    public ICollection<DatasetColumnValue> Values { get; set; }
+    = new List<DatasetColumnValue>();
 }

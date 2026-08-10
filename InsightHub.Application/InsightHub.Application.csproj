@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
     <Folder Include="DTOs\" />
     <Folder Include="Features\Datasets\DTOs\" />
     <Folder Include="Features\Datasets\Validators\" />

@@ -4,6 +4,7 @@ using InsightHub.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InsightHub.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260807130444_AddDatasetColumnValues")]
+    partial class AddDatasetColumnValues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,29 +142,6 @@ namespace InsightHub.Infrastructure.Migrations
                     b.ToTable("DatasetColumnValues");
                 });
 
-            modelBuilder.Entity("InsightHub.Domain.Entities.DatasetRow", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("DatasetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("RowNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DatasetId");
-
-                    b.ToTable("DatasetRows");
-                });
-
             modelBuilder.Entity("InsightHub.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -220,22 +200,9 @@ namespace InsightHub.Infrastructure.Migrations
                     b.Navigation("DatasetColumn");
                 });
 
-            modelBuilder.Entity("InsightHub.Domain.Entities.DatasetRow", b =>
-                {
-                    b.HasOne("InsightHub.Domain.Entities.Dataset", "Dataset")
-                        .WithMany("Rows")
-                        .HasForeignKey("DatasetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dataset");
-                });
-
             modelBuilder.Entity("InsightHub.Domain.Entities.Dataset", b =>
                 {
                     b.Navigation("Columns");
-
-                    b.Navigation("Rows");
                 });
 
             modelBuilder.Entity("InsightHub.Domain.Entities.DatasetColumn", b =>

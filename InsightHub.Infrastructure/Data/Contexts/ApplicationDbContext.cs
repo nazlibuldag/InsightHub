@@ -20,4 +20,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Dataset> Datasets => Set<Dataset>();
 
     public DbSet<DatasetColumn> DatasetColumns => Set<DatasetColumn>();
+
+    public DbSet<DatasetColumnValue> DatasetColumnValues
+    => Set<DatasetColumnValue>();
+
+    public DbSet<DatasetRow> DatasetRows { get; set; }
 }

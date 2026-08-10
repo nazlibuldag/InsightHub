@@ -22,4 +22,6 @@ public class Dataset : BaseEntity
     public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<DatasetColumn> Columns { get; set; } = new List<DatasetColumn>();
+
+    public ICollection<DatasetRow> Rows { get; set; } = new List<DatasetRow>();
 }

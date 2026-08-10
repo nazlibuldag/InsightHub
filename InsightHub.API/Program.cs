@@ -22,6 +22,9 @@ builder.Services.AddScoped<IColumnAnalysisService, ColumnAnalysisService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<IExcelReaderService, ExcelReaderService>();
 builder.Services.AddScoped<IExcelColumnAnalysisService, ExcelColumnAnalysisService>();
+builder.Services.AddScoped<IDatasetColumnValueRepository, DatasetColumnValueRepository>();
+
+builder.Services.AddScoped<IDatasetRowRepository, DatasetRowRepository>();
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(InsightHub.Application.Features.Datasets.Commands.CreateDataset.CreateDatasetCommand).Assembly));
