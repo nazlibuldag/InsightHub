@@ -15,6 +15,8 @@ public class UploadDatasetCommandHandler
     private readonly IExcelColumnAnalysisService _excelColumnAnalysisService;
     private readonly IDatasetColumnRepository _datasetColumnRepository;
     private readonly IDatasetColumnValueRepository _datasetColumnValueRepository;
+    private readonly IDatasetRowService _datasetRowService;
+    private readonly IDatasetRowRepository _datasetRowRepository;
 
     public UploadDatasetCommandHandler(
         IDatasetRepository datasetRepository,
@@ -24,7 +26,9 @@ public class UploadDatasetCommandHandler
         IColumnAnalysisService columnAnalysisService,
         IExcelColumnAnalysisService excelColumnAnalysisService,
         IDatasetColumnRepository datasetColumnRepository,
-        IDatasetColumnValueRepository datasetColumnValueRepository)
+        IDatasetColumnValueRepository datasetColumnValueRepository,
+        IDatasetRowService datasetRowService,
+        IDatasetRowRepository datasetRowRepository)
     {
         _datasetRepository = datasetRepository;
         _fileStorageService = fileStorageService;
@@ -34,6 +38,8 @@ public class UploadDatasetCommandHandler
         _excelColumnAnalysisService = excelColumnAnalysisService;
         _datasetColumnRepository = datasetColumnRepository;
         _datasetColumnValueRepository = datasetColumnValueRepository;
+        _datasetRowService = datasetRowService;
+        _datasetRowRepository = datasetRowRepository;
     }
 
     public async Task<Guid> Handle(
@@ -50,10 +56,12 @@ public class UploadDatasetCommandHandler
             "Uploads",
             fileName);
 
-        // 2. Dosya bilgilerini oku
-        (int TotalRows, int TotalColumns) fileInfo;
+        // 2. Dosya uzantısını kontrol et
+        var extension = Path.GetExtension(fileName)
+            .ToLowerInvariant();
 
-        var extension = Path.GetExtension(fileName).ToLower();
+        // 3. Dosya bilgilerini oku
+        (int TotalRows, int TotalColumns) fileInfo;
 
         if (extension == ".csv")
         {
@@ -69,10 +77,11 @@ public class UploadDatasetCommandHandler
         }
         else
         {
-            throw new Exception("Desteklenmeyen dosya formatı.");
+            throw new Exception(
+                "Desteklenmeyen dosya formatı.");
         }
 
-        // 3. Dataset oluştur
+        // 4. Dataset oluştur
         var dataset = new Dataset
         {
             Name = request.Name,
@@ -86,7 +95,7 @@ public class UploadDatasetCommandHandler
             dataset,
             cancellationToken);
 
-        // 4. CSV analizi
+        // 5. CSV analizi
         if (extension == ".csv")
         {
             var analysisResult =
@@ -94,12 +103,12 @@ public class UploadDatasetCommandHandler
                     filePath,
                     dataset.Id);
 
-            // 5. Kolonları veritabanına kaydet
+            // Kolonları kaydet
             await _datasetColumnRepository.AddRangeAsync(
                 analysisResult.Columns,
                 cancellationToken);
 
-            // 6. DatasetColumnValue kayıtlarını oluştur
+            // DatasetColumnValue kayıtlarını oluştur
             var columnValues = new List<DatasetColumnValue>();
 
             foreach (var column in analysisResult.Columns)
@@ -131,7 +140,7 @@ public class UploadDatasetCommandHandler
                 }
             }
 
-            // 7. Value kayıtlarını veritabanına kaydet
+            // Value kayıtlarını kaydet
             if (columnValues.Any())
             {
                 await _datasetColumnValueRepository.AddRangeAsync(
@@ -139,7 +148,8 @@ public class UploadDatasetCommandHandler
                     cancellationToken);
             }
         }
-        // 8. Excel analizi
+
+        // 6. Excel analizi
         else if (extension == ".xlsx")
         {
             var columns =
@@ -148,11 +158,27 @@ public class UploadDatasetCommandHandler
                     dataset.Id,
                     cancellationToken);
 
+            // Kolonları kaydet
             await _datasetColumnRepository.AddRangeAsync(
                 columns,
                 cancellationToken);
         }
 
+        // 7. CSV veya Excel fark etmeksizin
+        // gerçek satırları DatasetRow tablosuna kaydet
+        var rows = await _datasetRowService.ReadRowsAsync(
+            filePath,
+            dataset.Id,
+            cancellationToken);
+
+        if (rows.Any())
+        {
+            await _datasetRowRepository.AddRangeAsync(
+                rows,
+                cancellationToken);
+        }
+
+        // 8. Dataset ID'sini döndür
         return dataset.Id;
     }
 }

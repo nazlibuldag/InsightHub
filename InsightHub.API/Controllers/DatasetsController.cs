@@ -1,13 +1,14 @@
 ﻿using InsightHub.Application.Features.Datasets.Commands.CreateDataset;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
+using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
 using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
-using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
-using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
-using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
+using InsightHub.Application.Interfaces;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InsightHub.API.Controllers;
 
@@ -16,10 +17,12 @@ namespace InsightHub.API.Controllers;
 public class DatasetsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IDatasetRowRepository _datasetRowRepository;
 
-    public DatasetsController(IMediator mediator)
+    public DatasetsController(IMediator mediator, IDatasetRowRepository datasetRowRepository)
     {
         _mediator = mediator;
+        _datasetRowRepository = datasetRowRepository;
     }
 
     [HttpPost]
@@ -85,6 +88,16 @@ public class DatasetsController : ControllerBase
             });
 
         return Ok(result);
+    }
+
+    [HttpGet("{id}/rows")]
+    public async Task<IActionResult> GetDatasetRows(Guid id)
+    {
+        var rows = await _datasetRowRepository.GetByDatasetIdAsync(
+            id,
+            HttpContext.RequestAborted);
+
+        return Ok(rows);
     }
 
     [HttpPut("{id}")]
