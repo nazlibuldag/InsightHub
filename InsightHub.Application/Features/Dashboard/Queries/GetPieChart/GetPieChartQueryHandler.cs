@@ -1,7 +1,7 @@
 ﻿using InsightHub.Application.Interfaces;
 using MediatR;
 
-namespace InsightHub.Application.Features.Datasets.Queries.GetPieChart;
+namespace InsightHub.Application.Features.Dashboard.Queries.GetPieChart;
 
 public class GetPieChartQueryHandler
     : IRequestHandler<GetPieChartQuery, List<GetPieChartResponse>>

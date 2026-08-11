@@ -28,6 +28,8 @@ builder.Services.AddScoped<IDatasetRowRepository, DatasetRowRepository>();
 
 builder.Services.AddScoped<IDatasetRowService, DatasetRowService>();
 
+builder.Services.AddScoped<IExcelDatasetRowService, ExcelDatasetRowService>();
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(InsightHub.Application.Features.Datasets.Commands.CreateDataset.CreateDatasetCommand).Assembly));
 

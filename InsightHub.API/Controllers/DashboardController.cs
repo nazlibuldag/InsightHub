@@ -1,6 +1,6 @@
 ﻿using InsightHub.Application.Features.Dashboard.Queries.GetBarChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetDashboardSummary;
-using InsightHub.Application.Features.Datasets.Queries.GetPieChart;
+using InsightHub.Application.Features.Dashboard.Queries.GetPieChart;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -17,6 +17,7 @@ public class UploadDatasetCommandHandler
     private readonly IDatasetColumnValueRepository _datasetColumnValueRepository;
     private readonly IDatasetRowService _datasetRowService;
     private readonly IDatasetRowRepository _datasetRowRepository;
+    private readonly IExcelDatasetRowService _excelDatasetRowService;
 
     public UploadDatasetCommandHandler(
         IDatasetRepository datasetRepository,
@@ -28,7 +29,8 @@ public class UploadDatasetCommandHandler
         IDatasetColumnRepository datasetColumnRepository,
         IDatasetColumnValueRepository datasetColumnValueRepository,
         IDatasetRowService datasetRowService,
-        IDatasetRowRepository datasetRowRepository)
+        IDatasetRowRepository datasetRowRepository,
+        IExcelDatasetRowService excelDatasetRowService)
     {
         _datasetRepository = datasetRepository;
         _fileStorageService = fileStorageService;
@@ -40,6 +42,7 @@ public class UploadDatasetCommandHandler
         _datasetColumnValueRepository = datasetColumnValueRepository;
         _datasetRowService = datasetRowService;
         _datasetRowRepository = datasetRowRepository;
+        _excelDatasetRowService = excelDatasetRowService;
     }
 
     public async Task<Guid> Handle(
@@ -147,9 +150,20 @@ public class UploadDatasetCommandHandler
                     columnValues,
                     cancellationToken);
             }
+
+            var rows = await _datasetRowService.ReadRowsAsync(
+    filePath,
+    dataset.Id,
+    cancellationToken);
+
+            if (rows.Any())
+            {
+                await _datasetRowRepository.AddRangeAsync(
+                    rows,
+                    cancellationToken);
+            }
         }
 
-        // 6. Excel analizi
         else if (extension == ".xlsx")
         {
             var columns =
@@ -158,25 +172,77 @@ public class UploadDatasetCommandHandler
                     dataset.Id,
                     cancellationToken);
 
-            // Kolonları kaydet
+            // Önce kolonları DB'ye kaydet
             await _datasetColumnRepository.AddRangeAsync(
                 columns,
                 cancellationToken);
-        }
 
-        // 7. CSV veya Excel fark etmeksizin
-        // gerçek satırları DatasetRow tablosuna kaydet
-        var rows = await _datasetRowService.ReadRowsAsync(
-            filePath,
-            dataset.Id,
-            cancellationToken);
+            // Excel satırlarını oku
+            var rows =
+                await _excelDatasetRowService.ReadRowsAsync(
+                    filePath,
+                    dataset.Id,
+                    cancellationToken);
 
-        if (rows.Any())
-        {
             await _datasetRowRepository.AddRangeAsync(
                 rows,
                 cancellationToken);
+
+            // Kategorik kolonların değerlerini oluştur
+            var columnValues = new List<DatasetColumnValue>();
+
+            foreach (var column in columns)
+            {
+                if (column.DataType != Domain.Enums.DataType.String)
+                    continue;
+
+                foreach (var row in rows)
+                {
+                    using var document =
+                        System.Text.Json.JsonDocument.Parse(row.Data);
+
+                    if (!document.RootElement.TryGetProperty(
+                            column.ColumnName,
+                            out var property))
+                    {
+                        continue;
+                    }
+
+                    var value = property.GetString();
+
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
+
+                    var existingValue = columnValues.FirstOrDefault(
+                        x => x.DatasetColumnId == column.Id &&
+                             x.Value == value);
+
+                    if (existingValue == null)
+                    {
+                        columnValues.Add(
+                            new DatasetColumnValue
+                            {
+                                DatasetColumnId = column.Id,
+                                Value = value,
+                                Count = 1
+                            });
+                    }
+                    else
+                    {
+                        existingValue.Count++;
+                    }
+                }
+            }
+
+            // Value'ları DB'ye kaydet
+            if (columnValues.Any())
+            {
+                await _datasetColumnValueRepository.AddRangeAsync(
+                    columnValues,
+                    cancellationToken);
+            }
         }
+
 
         // 8. Dataset ID'sini döndür
         return dataset.Id;
