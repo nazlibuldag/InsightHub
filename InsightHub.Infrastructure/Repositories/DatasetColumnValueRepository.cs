@@ -31,4 +31,13 @@ public class DatasetColumnValueRepository : IDatasetColumnValueRepository
             .OrderByDescending(x => x.Count)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task DeleteRangeAsync(
+    List<DatasetColumnValue> values,
+    CancellationToken cancellationToken)
+    {
+        _context.DatasetColumnValues.RemoveRange(values);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

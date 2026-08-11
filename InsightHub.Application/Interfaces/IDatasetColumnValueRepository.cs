@@ -11,4 +11,8 @@ public interface IDatasetColumnValueRepository
     Task<List<DatasetColumnValue>> GetByColumnIdAsync(
         Guid columnId,
         CancellationToken cancellationToken);
+
+    Task DeleteRangeAsync(
+    List<DatasetColumnValue> values,
+    CancellationToken cancellationToken);
 }

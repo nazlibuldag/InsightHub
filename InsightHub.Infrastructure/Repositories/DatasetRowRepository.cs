@@ -34,4 +34,25 @@ public class DatasetRowRepository : IDatasetRowRepository
             .OrderBy(x => x.RowNumber)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<DatasetRow?> GetByDatasetIdAndRowNumberAsync(
+    Guid datasetId,
+    int rowNumber,
+    CancellationToken cancellationToken)
+    {
+        return await _context.DatasetRows
+            .FirstOrDefaultAsync(
+                x => x.DatasetId == datasetId &&
+                     x.RowNumber == rowNumber,
+                cancellationToken);
+    }
+
+    public async Task DeleteRangeAsync(
+    List<DatasetRow> rows,
+    CancellationToken cancellationToken)
+    {
+        _context.DatasetRows.RemoveRange(rows);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

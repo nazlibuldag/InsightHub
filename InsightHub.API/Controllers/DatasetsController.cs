@@ -9,6 +9,7 @@ using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
 using InsightHub.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 
 namespace InsightHub.API.Controllers;
 
@@ -101,26 +102,58 @@ public class DatasetsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id,UpdateDatasetCommand command)
+    public async Task<IActionResult> UpdateDataset(
+        Guid id,
+        [FromBody] UpdateDatasetRequest request)
     {
-        command.Id = id;
+        var result = await _mediator.Send(
+            new UpdateDatasetCommand
+            {
+                Id = id,
+                Name = request.Name,
+                Description = request.Description
+            });
 
-        await _mediator.Send(command);
+        if (!result)
+            return NotFound("Dataset bulunamadı.");
 
         return Ok(new
         {
-            Message = "Dataset başarıyla güncellendi."
+            message = "Dataset başarıyla güncellendi."
         });
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteDataset(Guid id)
     {
-        await _mediator.Send(new DeleteDatasetCommand(id));
+        var result = await _mediator.Send(
+            new DeleteDatasetCommand
+            {
+                Id = id
+            });
+
+        if (!result)
+            return NotFound("Dataset bulunamadı.");
 
         return Ok(new
         {
-            Message = "Dataset başarıyla silindi."
+            message = "Dataset başarıyla silindi."
         });
+    }
+    [HttpGet("{id}/rows/{rowNumber}")]
+    public async Task<IActionResult> GetDatasetRow(
+    Guid id,
+    int rowNumber)
+    {
+        var row = await _datasetRowRepository
+            .GetByDatasetIdAndRowNumberAsync(
+                id,
+                rowNumber,
+                HttpContext.RequestAborted);
+
+        if (row == null)
+            return NotFound("Satır bulunamadı.");
+
+        return Ok(row);
     }
 }

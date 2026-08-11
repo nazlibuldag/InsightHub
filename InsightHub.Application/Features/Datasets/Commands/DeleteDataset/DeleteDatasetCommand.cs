@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using MediatR;
+﻿using MediatR;
 
 namespace InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
 
-public record DeleteDatasetCommand(Guid Id) : IRequest;
+public class DeleteDatasetCommand : IRequest<bool>
+{
+    public Guid Id { get; set; }
+}

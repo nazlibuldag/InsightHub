@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using MediatR;
+﻿using MediatR;
 
 namespace InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 
-public class UpdateDatasetCommand : IRequest
+public class UpdateDatasetCommand : IRequest<bool>
 {
     public Guid Id { get; set; }
 

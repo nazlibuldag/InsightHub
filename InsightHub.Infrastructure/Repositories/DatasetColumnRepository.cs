@@ -25,4 +25,22 @@ public class DatasetColumnRepository : IDatasetColumnRepository
         await _context.DatasetColumns.AddRangeAsync(columns, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<List<DatasetColumn>> GetByDatasetIdAsync(
+    Guid datasetId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.DatasetColumns
+            .Where(x => x.DatasetId == datasetId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task DeleteRangeAsync(
+        List<DatasetColumn> columns,
+        CancellationToken cancellationToken)
+    {
+        _context.DatasetColumns.RemoveRange(columns);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

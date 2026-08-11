@@ -11,4 +11,13 @@ public interface IDatasetRowRepository
     Task<List<DatasetRow>> GetByDatasetIdAsync(
         Guid datasetId,
         CancellationToken cancellationToken);
+
+    Task<DatasetRow?> GetByDatasetIdAndRowNumberAsync(
+    Guid datasetId,
+    int rowNumber,
+    CancellationToken cancellationToken);
+
+    Task DeleteRangeAsync(
+    List<DatasetRow> rows,
+    CancellationToken cancellationToken);
 }

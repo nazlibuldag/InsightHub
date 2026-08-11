@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using InsightHub.Application.Interfaces;
+﻿using InsightHub.Application.Interfaces;
 using MediatR;
 
 namespace InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 
-public class UpdateDatasetCommandHandler : IRequestHandler<UpdateDatasetCommand>
+public class UpdateDatasetCommandHandler
+    : IRequestHandler<UpdateDatasetCommand, bool>
 {
     private readonly IDatasetRepository _datasetRepository;
 
-    public UpdateDatasetCommandHandler(IDatasetRepository datasetRepository)
+    public UpdateDatasetCommandHandler(
+        IDatasetRepository datasetRepository)
     {
         _datasetRepository = datasetRepository;
     }
 
-    public async Task Handle(
+    public async Task<bool> Handle(
         UpdateDatasetCommand request,
         CancellationToken cancellationToken)
     {
@@ -27,7 +23,7 @@ public class UpdateDatasetCommandHandler : IRequestHandler<UpdateDatasetCommand>
             cancellationToken);
 
         if (dataset == null)
-            throw new Exception("Dataset bulunamadı.");
+            return false;
 
         dataset.Name = request.Name;
         dataset.Description = request.Description;
@@ -35,5 +31,7 @@ public class UpdateDatasetCommandHandler : IRequestHandler<UpdateDatasetCommand>
         await _datasetRepository.UpdateAsync(
             dataset,
             cancellationToken);
+
+        return true;
     }
 }
