@@ -1,66 +1,57 @@
 ﻿using InsightHub.Application.Interfaces;
 using MediatR;
 
-namespace InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
+namespace InsightHub.Application.Features.Datasets.Queries.SearchDataset;
 
-public class GetDatasetDataQueryHandler
-    : IRequestHandler<GetDatasetDataQuery, GetDatasetDataResponse>
+public class SearchDatasetQueryHandler
+    : IRequestHandler<SearchDatasetQuery, SearchDatasetResponse>
 {
-    private readonly IDatasetRepository _datasetRepository;
     private readonly IDatasetRowRepository _datasetRowRepository;
 
-    public GetDatasetDataQueryHandler(
-        IDatasetRepository datasetRepository,
+    public SearchDatasetQueryHandler(
         IDatasetRowRepository datasetRowRepository)
     {
-        _datasetRepository = datasetRepository;
         _datasetRowRepository = datasetRowRepository;
     }
 
-    public async Task<GetDatasetDataResponse> Handle(
-        GetDatasetDataQuery request,
+    public async Task<SearchDatasetResponse> Handle(
+        SearchDatasetQuery request,
         CancellationToken cancellationToken)
     {
-        var dataset = await _datasetRepository.GetByIdAsync(
-            request.DatasetId,
-            cancellationToken);
-
-        if (dataset == null)
-            throw new Exception("Dataset bulunamadı.");
-
         if (request.Page < 1)
             request.Page = 1;
 
         if (request.PageSize < 1)
             request.PageSize = 20;
 
-        var allRows = await _datasetRowRepository.GetByDatasetIdAsync(
+        var rows = await _datasetRowRepository.SearchAsync(
             request.DatasetId,
+            request.SearchTerm,
             cancellationToken);
 
-        var totalRows = allRows.Count;
+        var totalRows = rows.Count;
 
         var totalPages = (int)Math.Ceiling(
             totalRows / (double)request.PageSize);
 
-        var rows = allRows
+        var pagedRows = rows
             .OrderBy(x => x.RowNumber)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(x => new DatasetRowResponse
+            .Select(x => new SearchDatasetRowResponse
             {
                 RowNumber = x.RowNumber,
                 Data = x.Data
             })
             .ToList();
 
-        return new GetDatasetDataResponse
+        return new SearchDatasetResponse
         {
             Page = request.Page,
             PageSize = request.PageSize,
             TotalRows = totalRows,
             TotalPages = totalPages,
-            Rows = rows
+            Rows = pagedRows
         };
     }
 }

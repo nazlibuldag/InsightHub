@@ -1,6 +1,6 @@
-﻿namespace InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
+﻿namespace InsightHub.Application.Features.Datasets.Queries.SearchDataset;
 
-public class GetDatasetDataResponse
+public class SearchDatasetResponse
 {
     public int Page { get; set; }
 
@@ -10,10 +10,10 @@ public class GetDatasetDataResponse
 
     public int TotalPages { get; set; }
 
-    public List<DatasetRowResponse> Rows { get; set; } = new();
+    public List<SearchDatasetRowResponse> Rows { get; set; } = new();
 }
 
-public class DatasetRowResponse
+public class SearchDatasetRowResponse
 {
     public int RowNumber { get; set; }
 

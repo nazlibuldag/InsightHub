@@ -55,4 +55,23 @@ public class DatasetRowRepository : IDatasetRowRepository
 
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<List<DatasetRow>> SearchAsync(
+    Guid datasetId,
+    string? searchTerm,
+    CancellationToken cancellationToken)
+    {
+        var query = _context.DatasetRows
+            .Where(x => x.DatasetId == datasetId);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(x =>
+                x.Data.Contains(searchTerm));
+        }
+
+        return await query
+            .OrderBy(x => x.RowNumber)
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using InsightHub.Application.Features.Dashboard.Queries.GetBarChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetDashboardSummary;
+using InsightHub.Application.Features.Dashboard.Queries.GetLineChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetPieChart;
+using InsightHub.Application.Features.Dashboard.Queries.GetScatterChart;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,6 +53,38 @@ public class DashboardController : ControllerBase
             {
                 DatasetId = datasetId,
                 ColumnName = columnName
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{datasetId}/charts/line")]
+    public async Task<IActionResult> GetLineChart(
+    Guid datasetId,
+    [FromQuery] string columnName)
+    {
+        var result = await _mediator.Send(
+            new GetLineChartQuery
+            {
+                DatasetId = datasetId,
+                ColumnName = columnName
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{datasetId}/charts/scatter")]
+    public async Task<IActionResult> GetScatterChart(
+    Guid datasetId,
+    [FromQuery] string xColumnName,
+    [FromQuery] string yColumnName)
+    {
+        var result = await _mediator.Send(
+            new GetScatterChartQuery
+            {
+                DatasetId = datasetId,
+                XColumnName = xColumnName,
+                YColumnName = yColumnName
             });
 
         return Ok(result);

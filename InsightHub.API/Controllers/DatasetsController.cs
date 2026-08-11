@@ -6,10 +6,10 @@ using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
+using InsightHub.Application.Features.Datasets.Queries.SearchDataset;
 using InsightHub.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 
 namespace InsightHub.API.Controllers;
 
@@ -80,12 +80,17 @@ public class DatasetsController : ControllerBase
     }
 
     [HttpGet("{id}/data")]
-    public async Task<IActionResult> GetDatasetData(Guid id)
+    public async Task<IActionResult> GetDatasetData(
+     Guid id,
+     [FromQuery] int page = 1,
+     [FromQuery] int pageSize = 20)
     {
         var result = await _mediator.Send(
             new GetDatasetDataQuery
             {
-                DatasetId = id
+                DatasetId = id,
+                Page = page,
+                PageSize = pageSize
             });
 
         return Ok(result);
@@ -155,5 +160,24 @@ public class DatasetsController : ControllerBase
             return NotFound("Satır bulunamadı.");
 
         return Ok(row);
+    }
+
+    [HttpGet("{id}/search")]
+    public async Task<IActionResult> SearchDataset(
+       Guid id,
+       [FromQuery] string? searchTerm,
+       [FromQuery] int page = 1,
+       [FromQuery] int pageSize = 20)
+    {
+        var result = await _mediator.Send(
+            new SearchDatasetQuery
+            {
+                DatasetId = id,
+                SearchTerm = searchTerm,
+                Page = page,
+                PageSize = pageSize
+            });
+
+        return Ok(result);
     }
 }

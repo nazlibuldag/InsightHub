@@ -20,4 +20,9 @@ public interface IDatasetRowRepository
     Task DeleteRangeAsync(
     List<DatasetRow> rows,
     CancellationToken cancellationToken);
+
+    Task<List<DatasetRow>> SearchAsync(
+    Guid datasetId,
+    string? searchTerm,
+    CancellationToken cancellationToken);
 }
