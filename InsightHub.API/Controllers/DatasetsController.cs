@@ -2,11 +2,14 @@
 using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
 using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
 using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
+using InsightHub.Application.Features.Datasets.Queries.FilterDataset;
 using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetById;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetData;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetRows;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetSummary;
 using InsightHub.Application.Features.Datasets.Queries.SearchDataset;
+using InsightHub.Application.Features.Datasets.Queries.SortDataset;
 using InsightHub.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -174,6 +177,72 @@ public class DatasetsController : ControllerBase
             {
                 DatasetId = id,
                 SearchTerm = searchTerm,
+                Page = page,
+                PageSize = pageSize
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/filter")]
+    public async Task<IActionResult> FilterDataset(
+    Guid id,
+    [FromQuery] string columnName,
+    [FromQuery] string @operator,
+    [FromQuery] string value)
+    {
+        var result = await _mediator.Send(
+            new FilterDatasetQuery
+            {
+                DatasetId = id,
+                ColumnName = columnName,
+                Operator = @operator,
+                Value = value
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/sort")]
+    public async Task<IActionResult> SortDataset(
+    Guid id,
+    [FromQuery] string columnName,
+    [FromQuery] string sortOrder = "asc")
+    {
+        var result = await _mediator.Send(
+            new SortDatasetQuery
+            {
+                DatasetId = id,
+                ColumnName = columnName,
+                SortOrder = sortOrder
+            });
+
+        return Ok(result);
+    }
+
+
+    [HttpGet("{id}/query")]
+    public async Task<IActionResult> QueryDataset(
+    Guid id,
+    [FromQuery] string? searchTerm,
+    [FromQuery] string? filterColumn,
+    [FromQuery] string? filterOperator,
+    [FromQuery] string? filterValue,
+    [FromQuery] string? sortColumn,
+    [FromQuery] string sortOrder = "asc",
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 20)
+    {
+        var result = await _mediator.Send(
+            new GetDatasetRowsQuery
+            {
+                DatasetId = id,
+                SearchTerm = searchTerm,
+                FilterColumn = filterColumn,
+                FilterOperator = filterOperator,
+                FilterValue = filterValue,
+                SortColumn = sortColumn,
+                SortOrder = sortOrder,
                 Page = page,
                 PageSize = pageSize
             });
