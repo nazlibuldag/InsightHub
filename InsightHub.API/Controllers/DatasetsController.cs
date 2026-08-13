@@ -1,6 +1,9 @@
-﻿using InsightHub.Application.Features.Datasets.Commands.CreateDataset;
+﻿using InsightHub.Application.Features.Datasets.Commands.AddDatasetRow;
+using InsightHub.Application.Features.Datasets.Commands.CreateDataset;
 using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
+using InsightHub.Application.Features.Datasets.Commands.DeleteDatasetRow;
 using InsightHub.Application.Features.Datasets.Commands.UpdateDataset;
+using InsightHub.Application.Features.Datasets.Commands.UpdateDatasetRow;
 using InsightHub.Application.Features.Datasets.Commands.UploadDataset;
 using InsightHub.Application.Features.Datasets.Queries.FilterDataset;
 using InsightHub.Application.Features.Datasets.Queries.GetAllDatasets;
@@ -248,5 +251,65 @@ public class DatasetsController : ControllerBase
             });
 
         return Ok(result);
+    }
+
+    [HttpPost("{id}/rows")]
+    public async Task<IActionResult> AddDatasetRow(
+    Guid id,
+    [FromBody] AddDatasetRowCommand command)
+    {
+        command.DatasetId = id;
+
+        var result = await _mediator.Send(command);
+
+        return Ok(new
+        {
+            message = "Dataset satırı başarıyla eklendi."
+        });
+    }
+
+
+    [HttpPut("{id}/rows/{rowNumber}")]
+    public async Task<IActionResult> UpdateDatasetRow(
+    Guid id,
+    int rowNumber,
+    [FromBody] string data)
+    {
+        var result = await _mediator.Send(
+            new UpdateDatasetRowCommand
+            {
+                DatasetId = id,
+                RowNumber = rowNumber,
+                Data = data
+            });
+
+        if (!result)
+            return NotFound("Satır bulunamadı.");
+
+        return Ok(new
+        {
+            message = "Dataset satırı başarıyla güncellendi."
+        });
+    }
+
+    [HttpDelete("{id}/rows/{rowNumber}")]
+    public async Task<IActionResult> DeleteDatasetRow(
+    Guid id,
+    int rowNumber)
+    {
+        var result = await _mediator.Send(
+            new DeleteDatasetRowCommand
+            {
+                DatasetId = id,
+                RowNumber = rowNumber
+            });
+
+        if (!result)
+            return NotFound("Satır bulunamadı.");
+
+        return Ok(new
+        {
+            message = "Dataset satırı başarıyla silindi."
+        });
     }
 }

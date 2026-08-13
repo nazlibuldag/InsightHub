@@ -1,9 +1,13 @@
-using InsightHub.Infrastructure.Data.Contexts;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using FluentValidation;
+using InsightHub.API.Middleware;
+using InsightHub.API.Middleware;
+using InsightHub.Application.Features.Datasets.Queries.GetDatasetRows;
 using InsightHub.Application.Interfaces;
+using InsightHub.Infrastructure.Data.Contexts;
 using InsightHub.Infrastructure.Repositories;
 using InsightHub.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +35,21 @@ builder.Services.AddScoped<IDatasetRowService, DatasetRowService>();
 builder.Services.AddScoped<IExcelDatasetRowService, ExcelDatasetRowService>();
 
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(InsightHub.Application.Features.Datasets.Commands.CreateDataset.CreateDatasetCommand).Assembly));
+{
+    cfg.RegisterServicesFromAssembly(
+        typeof(InsightHub.Application.Features.Datasets.Commands.CreateDataset.CreateDatasetCommand).Assembly);
+
+    cfg.AddOpenBehavior(
+        typeof(InsightHub.Application.Common.Behaviors.ValidationBehavior<,>));
+});
+builder.Services.AddScoped<
+    IValidator<GetDatasetRowsQuery>,
+    GetDatasetRowsQueryValidator>();
+
+
+builder.Services.AddValidatorsFromAssembly(
+    typeof(GetDatasetRowsQueryValidator).Assembly);
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,6 +57,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

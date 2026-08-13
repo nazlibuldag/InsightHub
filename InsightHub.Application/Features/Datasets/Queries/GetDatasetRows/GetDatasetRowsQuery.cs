@@ -14,7 +14,7 @@ public class GetDatasetRowsQuery
     public string? FilterOperator { get; set; }
 
     public string? FilterValue { get; set; }
-
+   
     public string? SortColumn { get; set; }
 
     public string SortOrder { get; set; } = "asc";

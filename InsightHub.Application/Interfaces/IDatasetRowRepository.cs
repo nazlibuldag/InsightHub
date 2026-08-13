@@ -25,4 +25,12 @@ public interface IDatasetRowRepository
     Guid datasetId,
     string? searchTerm,
     CancellationToken cancellationToken);
+
+    Task UpdateAsync(
+    DatasetRow row,
+    CancellationToken cancellationToken);
+
+    Task DeleteAsync(
+    DatasetRow row,
+    CancellationToken cancellationToken);
 }

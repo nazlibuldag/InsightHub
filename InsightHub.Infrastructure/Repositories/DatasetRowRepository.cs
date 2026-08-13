@@ -74,4 +74,23 @@ public class DatasetRowRepository : IDatasetRowRepository
             .OrderBy(x => x.RowNumber)
             .ToListAsync(cancellationToken);
     }
+
+
+    public async Task UpdateAsync(
+    DatasetRow row,
+    CancellationToken cancellationToken)
+    {
+        _context.DatasetRows.Update(row);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(
+    DatasetRow row,
+    CancellationToken cancellationToken)
+    {
+        _context.DatasetRows.Remove(row);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }
