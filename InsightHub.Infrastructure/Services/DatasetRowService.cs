@@ -67,8 +67,9 @@ public class DatasetRowService : IDatasetRowService
 
             foreach (var header in headers)
             {
-                rowData[header] =
-                    csv.GetField(header) ?? string.Empty;
+                var value = csv.GetField(header);
+
+                rowData[header] = value ?? string.Empty;
             }
 
             rows.Add(new DatasetRow
@@ -117,13 +118,11 @@ public class DatasetRowService : IDatasetRowService
 
                 for (int i = 0; i < headers.Count; i++)
                 {
-                    var value = row
-                        .Cell(i + 1)
-                        .Value
-                        .ToString();
+                    var cell = row.Cell(i + 1);
 
-                    rowData[headers[i]] =
-                        value ?? string.Empty;
+                    var value = cell.GetValue<string>();
+
+                    rowData[headers[i]] = value;
                 }
 
                 rows.Add(new DatasetRow
