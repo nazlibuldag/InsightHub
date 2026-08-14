@@ -43,4 +43,15 @@ public class DatasetColumnRepository : IDatasetColumnRepository
 
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task<DatasetColumn?> GetByIdAsync(
+    Guid id,
+    CancellationToken cancellationToken)
+    {
+        return await _context.DatasetColumns
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
 }

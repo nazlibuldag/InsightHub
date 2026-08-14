@@ -20,4 +20,8 @@ public interface IDatasetColumnRepository
         List<DatasetColumn> columns,
         CancellationToken cancellationToken);
 
+    Task<DatasetColumn?> GetByIdAsync(
+    Guid id,
+    CancellationToken cancellationToken);
+
 }
