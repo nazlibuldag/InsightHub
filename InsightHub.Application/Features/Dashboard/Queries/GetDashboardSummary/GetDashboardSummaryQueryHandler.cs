@@ -34,15 +34,28 @@ public class GetDashboardSummaryQueryHandler
 
             TotalColumns = dataset.TotalColumns,
 
-            NumericColumns = dataset.Columns.Count(x => x.DataType == DataType.Numeric),
+            NumericColumns = dataset.Columns.Count(
+                x => x.DataType == DataType.Numeric),
 
-            StringColumns = dataset.Columns.Count(x => x.DataType == DataType.String),
+            StringColumns = dataset.Columns.Count(
+                x => x.DataType == DataType.String),
 
-            DateColumns = dataset.Columns.Count(x => x.DataType == DataType.DateTime),
+            DateColumns = dataset.Columns.Count(
+                x => x.DataType == DataType.DateTime),
 
-            BooleanColumns = dataset.Columns.Count(x => x.DataType == DataType.Boolean),
+            BooleanColumns = dataset.Columns.Count(
+                x => x.DataType == DataType.Boolean),
 
-            TotalMissingValues = dataset.Columns.Sum(x => x.NullCount)
+            TotalMissingValues = dataset.Columns.Sum(
+                x => x.NullCount),
+
+            Columns = dataset.Columns
+                .Select(x => new DashboardColumnResponse
+                {
+                    ColumnName = x.ColumnName,
+                    DataType = x.DataType
+                })
+                .ToList()
         };
     }
 }
