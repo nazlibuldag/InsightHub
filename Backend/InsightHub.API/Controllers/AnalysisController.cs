@@ -1,4 +1,5 @@
-﻿using InsightHub.Application.Features.Analysis.Queries.GetCorrelation;
+﻿using InsightHub.Application.Features.Analysis.Queries.GetColumnSummary;
+using InsightHub.Application.Features.Analysis.Queries.GetCorrelation;
 using InsightHub.Application.Features.Analysis.Queries.GetCorrelationMatrix;
 using InsightHub.Application.Features.Analysis.Queries.GetDescriptiveStatistics;
 using InsightHub.Application.Features.Analysis.Queries.GetDistribution;
@@ -94,6 +95,24 @@ public class AnalysisController : ControllerBase
 
         if (result is null)
             return NotFound("Sayısal kolon bulunamadı veya veri bulunamadı.");
+
+        return Ok(result);
+    }
+
+    [HttpGet("{datasetId}/column-summary")]
+    public async Task<IActionResult> GetColumnSummary(
+    Guid datasetId,
+    [FromQuery] string columnName)
+    {
+        var result = await _mediator.Send(
+            new GetColumnSummaryQuery
+            {
+                DatasetId = datasetId,
+                ColumnName = columnName
+            });
+
+        if (result == null)
+            return NotFound("Kolon bulunamadı.");
 
         return Ok(result);
     }
