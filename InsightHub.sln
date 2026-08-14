@@ -6,12 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{2BE8ACA6-933B-BF2A-3671-3E2EAC007D17}"
-	ProjectSection(SolutionItems) = postProject
-		Frontend\InsightHub.Web\index.html = Frontend\InsightHub.Web\index.html
-		Frontend\InsightHub.Web\package.json = Frontend\InsightHub.Web\package.json
-		Frontend\InsightHub.Web\README.md = Frontend\InsightHub.Web\README.md
-		Frontend\InsightHub.Web\vite.config.ts = Frontend\InsightHub.Web\vite.config.ts
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsightHub.API", "Backend\InsightHub.API\InsightHub.API.csproj", "{A85928A7-7CF5-45A1-8DB9-488327E85B7A}"
 EndProject
@@ -20,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsightHub.Domain", "Backend\InsightHub.Domain\InsightHub.Domain.csproj", "{8D227E50-4535-4C10-9CD8-F11345A06B48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsightHub.Infrastructure", "Backend\InsightHub.Infrastructure\InsightHub.Infrastructure.csproj", "{7A1B1ECF-ED23-43D6-98FC-25CF7C0C8DDD}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "InsightHub.Web", "Frontend\InsightHub.Web\InsightHub.Web.esproj", "{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +75,12 @@ Global
 		{7A1B1ECF-ED23-43D6-98FC-25CF7C0C8DDD}.Release|x64.Build.0 = Release|Any CPU
 		{7A1B1ECF-ED23-43D6-98FC-25CF7C0C8DDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{7A1B1ECF-ED23-43D6-98FC-25CF7C0C8DDD}.Release|x86.Build.0 = Release|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Release|x64.ActiveCfg = Release|Any CPU
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +90,7 @@ Global
 		{06242CE1-C719-4AEC-B9F6-2C4AE7E7EF05} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
 		{8D227E50-4535-4C10-9CD8-F11345A06B48} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
 		{7A1B1ECF-ED23-43D6-98FC-25CF7C0C8DDD} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
+		{90A40C0C-AC43-4C19-8656-A9D8F3BAFFA2} = {2BE8ACA6-933B-BF2A-3671-3E2EAC007D17}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE39900B-12B8-48EC-B249-7DAF73C999E0}
