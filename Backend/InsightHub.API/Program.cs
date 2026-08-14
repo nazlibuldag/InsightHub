@@ -1,6 +1,5 @@
 using FluentValidation;
 using InsightHub.API.Middleware;
-using InsightHub.API.Middleware;
 using InsightHub.Application.Features.Datasets.Queries.GetDatasetRows;
 using InsightHub.Application.Interfaces;
 using InsightHub.Infrastructure.Data.Contexts;
@@ -11,8 +10,6 @@ using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -52,6 +49,23 @@ builder.Services.AddValidatorsFromAssembly(
 
 
 builder.Services.AddControllers();
+
+// Configure CORS for Frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://localhost:5173",
+                "https://localhost:5174")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -68,6 +82,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("FrontendPolicy");
 
 app.UseAuthorization();
 
