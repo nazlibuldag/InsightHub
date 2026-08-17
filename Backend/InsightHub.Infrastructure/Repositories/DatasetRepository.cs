@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +36,16 @@ public class DatasetRepository : IDatasetRepository
     public async Task<List<Dataset>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _context.Datasets.ToListAsync(cancellationToken);
+    }
+
+    public async Task<List<Dataset>> GetAllByUserIdAsync(Guid? userId, CancellationToken cancellationToken)
+    {
+        if (!userId.HasValue)
+        {
+            // If user is unauthenticated or has no userId, return datasets with null UserId or all fallback
+            return await _context.Datasets.Where(d => d.UserId == null).ToListAsync(cancellationToken);
+        }
+        return await _context.Datasets.Where(d => d.UserId == userId || d.UserId == null).ToListAsync(cancellationToken);
     }
 
     public async Task<Dataset?> GetByIdWithColumnsAsync(

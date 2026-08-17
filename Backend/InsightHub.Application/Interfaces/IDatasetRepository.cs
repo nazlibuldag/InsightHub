@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +15,8 @@ public interface IDatasetRepository
     Task<Dataset?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
     Task<List<Dataset>> GetAllAsync(CancellationToken cancellationToken);
+
+    Task<List<Dataset>> GetAllByUserIdAsync(Guid? userId, CancellationToken cancellationToken);
 
     Task<Dataset?> GetByIdWithColumnsAsync( Guid id,CancellationToken cancellationToken);
 

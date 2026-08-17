@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +20,10 @@ public class Dataset : BaseEntity
     public int TotalColumns { get; set; }
 
     public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+
+    public Guid? UserId { get; set; }
+
+    public User? User { get; set; }
 
     public ICollection<DatasetColumn> Columns { get; set; } = new List<DatasetColumn>();
 
