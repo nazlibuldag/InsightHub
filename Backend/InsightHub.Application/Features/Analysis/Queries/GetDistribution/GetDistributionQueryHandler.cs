@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.Json;
 using InsightHub.Application.Interfaces;
 using MediatR;
@@ -43,11 +43,12 @@ public class GetDistributionQueryHandler
                 continue;
             }
 
-            if (double.TryParse(
-                    property.GetString(),
-                    NumberStyles.Float,
-                    CultureInfo.InvariantCulture,
-                    out var value))
+            double value;
+            if (property.ValueKind == JsonValueKind.Number && property.TryGetDouble(out value))
+            {
+                values.Add(value);
+            }
+            else if (property.ValueKind == JsonValueKind.String && double.TryParse(property.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out value))
             {
                 values.Add(value);
             }

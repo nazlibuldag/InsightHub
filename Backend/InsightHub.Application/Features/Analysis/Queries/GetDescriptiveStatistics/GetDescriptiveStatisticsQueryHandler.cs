@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.Json;
 using InsightHub.Application.Interfaces;
 using MediatR;
@@ -23,6 +23,11 @@ public class GetDescriptiveStatisticsQueryHandler
         var rows = await _datasetRowRepository.GetByDatasetIdAsync(
             request.DatasetId,
             cancellationToken);
+
+        if (!rows.Any())
+        {
+            throw new KeyNotFoundException("Belirtilen dataset bulunamadı veya verisi yok.");
+        }
 
         var values = new List<double>();
 
@@ -58,7 +63,9 @@ public class GetDescriptiveStatisticsQueryHandler
         }
 
         if (values.Count == 0)
-            return null;
+        {
+            throw new ArgumentException($"'{request.ColumnName}' kolonu sayısal veri içermiyor veya kolon bulunamadı.");
+        }
 
         values.Sort();
 

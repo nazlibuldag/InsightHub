@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using InsightHub.Application.Interfaces;
 using MediatR;
 using System.Globalization;
@@ -37,16 +37,15 @@ public class GetOutliersQueryHandler
                 continue;
             }
 
-            if (!double.TryParse(
-        property.GetString(),
-        NumberStyles.Float,
-        CultureInfo.InvariantCulture,
-        out var value))
+            double value;
+            if (property.ValueKind == JsonValueKind.Number && property.TryGetDouble(out value))
             {
-                continue;
+                values.Add((row.RowNumber, value));
             }
-
-            values.Add((row.RowNumber, value));
+            else if (property.ValueKind == JsonValueKind.String && double.TryParse(property.GetString(), NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+            {
+                values.Add((row.RowNumber, value));
+            }
         }
 
         if (values.Count < 4)

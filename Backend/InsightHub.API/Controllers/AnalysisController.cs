@@ -1,4 +1,4 @@
-﻿using InsightHub.Application.Features.Analysis.Queries.GetColumnSummary;
+using InsightHub.Application.Features.Analysis.Queries.GetColumnSummary;
 using InsightHub.Application.Features.Analysis.Queries.GetCorrelation;
 using InsightHub.Application.Features.Analysis.Queries.GetCorrelationMatrix;
 using InsightHub.Application.Features.Analysis.Queries.GetDescriptiveStatistics;
@@ -116,4 +116,83 @@ public class AnalysisController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("{datasetId}/ai-insights")]
+    public async Task<IActionResult> GetAiInsights(Guid datasetId)
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Analysis.Queries.GetAiInsights.GetAiInsightsQuery
+            {
+                DatasetId = datasetId
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{datasetId}/forecast")]
+    public async Task<IActionResult> GetForecast(
+        Guid datasetId,
+        [FromQuery] int stepsAhead = 5)
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Analysis.Queries.GetDatasetForecast.GetDatasetForecastQuery
+            {
+                DatasetId = datasetId,
+                StepsAhead = stepsAhead
+            });
+
+        return Ok(result);
+    }
+
+    [HttpGet("{datasetId}/anomalies")]
+    public async Task<IActionResult> GetAnomalies(
+        Guid datasetId,
+        [FromQuery] double zThreshold = 2.5)
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Analysis.Queries.GetDatasetAnomalies.GetDatasetAnomaliesQuery(
+                datasetId,
+                zThreshold
+            ));
+
+        return Ok(result);
+    }
+
+    [HttpPost("{datasetId}/clean")]
+    public async Task<IActionResult> CleanDataset(
+        Guid datasetId,
+        [FromQuery] string strategy = "MEAN")
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Analysis.Commands.CleanDataset.CleanDatasetCommand(
+                datasetId,
+                strategy
+            ));
+
+        return Ok(result);
+    }
+
+    [HttpPost("{datasetId}/predict")]
+    public async Task<IActionResult> PredictDataset(
+        Guid datasetId,
+        [FromBody] PredictRequest request)
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Analysis.Queries.GetAiPrediction.GetAiPredictionQuery(
+                datasetId,
+                request.TargetColumn,
+                request.FeatureColumns ?? new List<string>(),
+                request.ModelType ?? "Auto",
+                request.InputValues ?? new Dictionary<string, double>()
+            ));
+
+        return Ok(result);
+    }
 }
+
+public record PredictRequest(
+    string TargetColumn,
+    List<string>? FeatureColumns,
+    string? ModelType,
+    Dictionary<string, double>? InputValues
+);
