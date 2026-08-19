@@ -1,9 +1,12 @@
-﻿using InsightHub.Application.Features.Dashboard.Queries.GetBarChart;
+using System.Security.Claims;
+using InsightHub.Application.Features.Dashboard.Queries.GetBarChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetDashboardSummary;
 using InsightHub.Application.Features.Dashboard.Queries.GetLineChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetPieChart;
 using InsightHub.Application.Features.Dashboard.Queries.GetScatterChart;
+using InsightHub.Application.Features.Dashboard.Queries.GetUserDashboardSummary;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InsightHub.API.Controllers;
@@ -17,6 +20,18 @@ public class DashboardController : ControllerBase
     public DashboardController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [Authorize]
+    [HttpGet("user-summary")]
+    public async Task<IActionResult> GetUserSummary()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = Guid.TryParse(claim, out var id) ? id : Guid.Empty;
+        var isAdmin = User.IsInRole("Admin");
+
+        var result = await _mediator.Send(new GetUserDashboardSummaryQuery(userId, isAdmin));
+        return Ok(result);
     }
 
     [HttpGet("{datasetId}")]

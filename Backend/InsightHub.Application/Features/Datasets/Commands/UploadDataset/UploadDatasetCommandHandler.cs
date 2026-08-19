@@ -1,4 +1,4 @@
-﻿using InsightHub.Application.Interfaces;
+using InsightHub.Application.Interfaces;
 using InsightHub.Domain.Entities;
 using MediatR;
 
@@ -18,6 +18,7 @@ public class UploadDatasetCommandHandler
     private readonly IDatasetRowService _datasetRowService;
     private readonly IDatasetRowRepository _datasetRowRepository;
     private readonly IExcelDatasetRowService _excelDatasetRowService;
+    private readonly ICurrentUserService _currentUserService;
 
     public UploadDatasetCommandHandler(
         IDatasetRepository datasetRepository,
@@ -30,7 +31,8 @@ public class UploadDatasetCommandHandler
         IDatasetColumnValueRepository datasetColumnValueRepository,
         IDatasetRowService datasetRowService,
         IDatasetRowRepository datasetRowRepository,
-        IExcelDatasetRowService excelDatasetRowService)
+        IExcelDatasetRowService excelDatasetRowService,
+        ICurrentUserService currentUserService)
     {
         _datasetRepository = datasetRepository;
         _fileStorageService = fileStorageService;
@@ -43,6 +45,7 @@ public class UploadDatasetCommandHandler
         _datasetRowService = datasetRowService;
         _datasetRowRepository = datasetRowRepository;
         _excelDatasetRowService = excelDatasetRowService;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Guid> Handle(
@@ -91,7 +94,8 @@ public class UploadDatasetCommandHandler
             Description = request.Description,
             FileName = fileName,
             TotalRows = fileInfo.TotalRows,
-            TotalColumns = fileInfo.TotalColumns
+            TotalColumns = fileInfo.TotalColumns,
+            UserId = _currentUserService.UserId
         };
 
         await _datasetRepository.AddAsync(

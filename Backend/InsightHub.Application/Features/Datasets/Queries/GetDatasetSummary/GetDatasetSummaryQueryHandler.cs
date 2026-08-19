@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,16 +14,27 @@ public class GetDatasetSummaryQueryHandler
     : IRequestHandler<GetDatasetSummaryQuery, GetDatasetSummaryResponse>
 {
     private readonly IDatasetRepository _datasetRepository;
+    private readonly ICacheService _cacheService;
 
-    public GetDatasetSummaryQueryHandler(IDatasetRepository datasetRepository)
+    public GetDatasetSummaryQueryHandler(
+        IDatasetRepository datasetRepository,
+        ICacheService cacheService)
     {
         _datasetRepository = datasetRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<GetDatasetSummaryResponse> Handle(
         GetDatasetSummaryQuery request,
         CancellationToken cancellationToken)
     {
+        var cacheKey = $"dataset:summary:{request.Id}";
+        var cachedSummary = await _cacheService.GetAsync<GetDatasetSummaryResponse>(cacheKey, cancellationToken);
+        if (cachedSummary != null)
+        {
+            return cachedSummary;
+        }
+
         var dataset = await _datasetRepository.GetByIdWithColumnsAsync(
             request.Id,
             cancellationToken);
@@ -31,7 +42,7 @@ public class GetDatasetSummaryQueryHandler
         if (dataset == null)
             throw new Exception("Dataset bulunamadı.");
 
-        return new GetDatasetSummaryResponse
+        var response = new GetDatasetSummaryResponse
         {
             Id = dataset.Id,
             Name = dataset.Name,
@@ -45,5 +56,9 @@ public class GetDatasetSummaryQueryHandler
 
             TotalMissingValues = dataset.Columns.Sum(c => c.NullCount)
         };
+
+        await _cacheService.SetAsync(cacheKey, response, TimeSpan.FromMinutes(15), cancellationToken);
+
+        return response;
     }
 }

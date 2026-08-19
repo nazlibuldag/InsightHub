@@ -1,4 +1,4 @@
-﻿using InsightHub.Application.Features.Datasets.Commands.AddDatasetRow;
+using InsightHub.Application.Features.Datasets.Commands.AddDatasetRow;
 using InsightHub.Application.Features.Datasets.Commands.CreateDataset;
 using InsightHub.Application.Features.Datasets.Commands.DeleteDataset;
 using InsightHub.Application.Features.Datasets.Commands.DeleteDatasetRow;
@@ -251,6 +251,33 @@ public class DatasetsController : ControllerBase
             });
 
         return Ok(result);
+    }
+
+    [HttpGet("{id}/export")]
+    public async Task<IActionResult> ExportDataset(
+        Guid id,
+        [FromQuery] string format = "csv")
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Datasets.Queries.ExportDataset.ExportDatasetQuery
+            {
+                DatasetId = id,
+                Format = format
+            });
+
+        return File(result.FileBytes, result.ContentType, result.FileName);
+    }
+
+    [HttpGet("{id}/export-pdf")]
+    public async Task<IActionResult> ExportDatasetPdf(Guid id)
+    {
+        var result = await _mediator.Send(
+            new InsightHub.Application.Features.Datasets.Queries.ExportDatasetPdf.ExportDatasetPdfQuery
+            {
+                DatasetId = id
+            });
+
+        return File(result.FileContents, "application/pdf", result.FileName);
     }
 
     [HttpPost("{id}/rows")]
