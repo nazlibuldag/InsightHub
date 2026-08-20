@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: insighthub_db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=InsightHub_Pass2026!
+    ports:
+      - "1433:1433"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: insighthub_api
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=InsightHubDb;User Id=sa;Password=InsightHub_Pass2026!;TrustServerCertificate=True;
+      - JwtSettings__Secret=Super_Secret_Key_For_InsightHub_Docker_Deploy_2026!
+    ports:
+      - "5099:5099"
+    depends_on:
+      - sqlserver

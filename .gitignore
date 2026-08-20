@@ -364,3 +364,7 @@ FodyWeavers.xsd
 
 # Uploaded dataset files
 InsightHub.API/Uploads/
+Backend/InsightHub.API/Uploads/
+test_report.pdf
+dist/
+Frontend/InsightHub.Web/dist/
